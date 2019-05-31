@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.dominokit.jackson</groupId>
+		<groupId>org.jresearch.dominokit.jackson</groupId>
         <artifactId>domino-jackson</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
@@ -23,7 +23,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
-    <build>
+    <!-- <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -50,5 +50,5 @@
                 <artifactId>nexus-staging-maven-plugin</artifactId>
             </plugin>
         </plugins>
-    </build>
+    </build> -->
 </project>
