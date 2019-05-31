@@ -48,17 +48,17 @@
 			<artifactId>jackson-super</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.jresearch.dominokit.jackson</groupId>
 			<artifactId>jackson-super</artifactId>
 			<version>${project.version}</version>
 			<classifier>sources</classifier>
-		</dependency>
-		<dependency>
+		</dependency> -->
+		<!-- <dependency>
 			<groupId>org.jresearch.gwtproject.i18n</groupId>
 			<artifactId>gwt-cldr</artifactId>
 			<version>${gwt-cldr.ver}</version>
-		</dependency>
+		</dependency> -->
 		<!-- <dependency>
 			<groupId>org.gwtproject.i18n</groupId>
 			<artifactId>gwt-cldr</artifactId>
@@ -85,9 +85,18 @@
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>jsr305</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.jsinterop</groupId>
+			<artifactId>jsinterop-annotations</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.jsinterop</groupId>
+			<artifactId>base</artifactId>
+			<version>1.0.0-RC1</version>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<!-- <plugin>
