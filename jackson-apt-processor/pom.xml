@@ -22,7 +22,7 @@
 	</properties>
 
 	<dependencies>
-		<!-- <dependency>
+		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-user</artifactId>
 			<scope>test</scope>
@@ -31,13 +31,13 @@
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-dev</artifactId>
 			<scope>test</scope>
-		</dependency> -->
-		<!-- <dependency>
-			<groupId>org.dominokit.jackson</groupId>
+		</dependency>
+		<dependency>
+			<groupId>org.jresearch.dominokit.jackson</groupId>
 			<artifactId>jackson-apt</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
-		</dependency> -->
+		</dependency>
 		<dependency>
 			<groupId>org.jresearch.dominokit.jackson</groupId>
 			<artifactId>jackson-super</artifactId>
