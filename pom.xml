@@ -10,7 +10,7 @@
 
     <groupId>org.jresearch.dominokit.jackson</groupId>
     <artifactId>domino-jackson</artifactId>
-    <version>1.1</version>
+    <version>1.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <url>https://github.com/DominoKit/gwt-jackson-apt</url>
@@ -39,7 +39,7 @@
 		<developerConnection>scm:hg:ssh://hg@bitbucket.org/hortonolite/domino-jackson</developerConnection>
 		<connection>scm:hg:https://foal@bitbucket.org/hortonolite/domino-jackson</connection>
 		<url>https://bitbucket.org/hortonolite/domino-jackson</url>
-      <tag>1.1</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <!-- <distributionManagement>
