@@ -33,6 +33,9 @@ import javax.lang.model.type.TypeMirror;
 import java.util.Deque;
 import java.util.LinkedList;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
 /**
  * <p>FieldSerializerChainBuilder class.</p>
  *
@@ -46,7 +49,9 @@ public class FieldSerializerChainBuilder implements MappersChainBuilder {
 
     private CodeBlock.Builder builder = CodeBlock.builder();
     private Deque<TypeName> serializers = new LinkedList<>();
-    private TypeMirror beanType;
+    private final TypeMirror beanType;
+	private final String packageName;
+
 
     /**
      * <p>Constructor for FieldSerializerChainBuilder.</p>
@@ -55,6 +60,18 @@ public class FieldSerializerChainBuilder implements MappersChainBuilder {
      */
     public FieldSerializerChainBuilder(TypeMirror beanType) {
         this.beanType = beanType;
+        this.packageName = null;
+    }
+
+    /**
+     * <p>Constructor for FieldSerializerChainBuilder.</p>
+     *
+     * @param beanType a {@link javax.lang.model.type.TypeMirror} object.
+     * @param packageName a {@link java.lang.String} object.
+     */
+    public FieldSerializerChainBuilder(String packageName, TypeMirror beanType) {
+        this.beanType = beanType;
+        this.packageName = packageName;
     }
 
     /** {@inheritDoc} */
@@ -63,6 +80,8 @@ public class FieldSerializerChainBuilder implements MappersChainBuilder {
         return builder.add(getFieldSerializer(field.asType()), asClassesArray()).build();
     }
 
+    /** {@inheritDoc} */
+    @Override
     public CodeBlock getInstance(TypeMirror fieldType) {
         return builder.add(getFieldSerializer(fieldType), asClassesArray()).build();
     }
@@ -72,6 +91,8 @@ public class FieldSerializerChainBuilder implements MappersChainBuilder {
     }
 
     private String getFieldSerializer(TypeMirror typeMirror) {
+    	typeMirror = Type.removeOuterWildCards(typeMirror);
+    	
         if (Type.isCollection(typeMirror))
             return getCollectionSerializer(typeMirror);
         if (Type.isIterable(typeMirror))
@@ -92,21 +113,29 @@ public class FieldSerializerChainBuilder implements MappersChainBuilder {
     }
 
     private String getCustomSerializer(TypeMirror typeMirror) {
-        if (typeMirror.toString().equals(beanType.toString())) {
-            serializers.addLast(ClassName.bestGuess(Type.serializerName(typeMirror)));
+        if (Type.stringifyTypeWithPackage(typeMirror).equals(Type.stringifyTypeWithPackage(beanType))) {
+            serializers.addLast(ClassName.bestGuess(Type.serializerName(getPackageName(typeMirror), typeMirror)));
         } else {
-            if (TypeRegistry.containsSerializer(typeMirror)) {
+            if (TypeRegistry.containsSerializer(Type.stringifyTypeWithPackage(typeMirror))) {
                 serializers.addLast(TypeRegistry.getCustomSerializer(typeMirror));
             } else {
-                TypeRegistry.registerSerializer(typeMirror.toString(), ClassName.bestGuess(generateCustomSerializer(typeMirror)));
+                TypeRegistry.registerSerializer(Type.stringifyTypeWithPackage(typeMirror), ClassName.bestGuess(generateCustomSerializer(typeMirror)));
                 serializers.addLast(TypeRegistry.getCustomSerializer(typeMirror));
             }
         }
         return "new $T()";
     }
 
+    private String getPackageName(TypeMirror typeMirror) {
+        if (Type.isJsonMapper(typeMirror) || isNull(this.packageName)) {
+            return ClassName.bestGuess(typeMirror.toString()).packageName();
+        } else {
+            return this.packageName;
+        }
+    }
+
     private String generateCustomSerializer(TypeMirror typeMirror) {
-        return Type.generateSerializer(typeMirror);
+    	return Type.generateSerializer(getPackageName(typeMirror), typeMirror);
     }
 
     private String getEnumSerializer() {
@@ -125,10 +154,11 @@ public class FieldSerializerChainBuilder implements MappersChainBuilder {
     }
 
     private String getKeySerializer(TypeMirror typeMirror) {
+    	typeMirror = Type.removeOuterWildCards(typeMirror);
         if (Type.isEnum(typeMirror))
             serializers.addLast(TypeRegistry.getKeySerializer(Enum.class.getName()));
         else
-            serializers.addLast(TypeRegistry.getKeySerializer(typeMirror.toString()));
+            serializers.addLast(TypeRegistry.getKeySerializer(Type.stringifyTypeWithPackage(Type.removeOuterWildCards(typeMirror))));
         return GET_INSTANCE;
     }
 

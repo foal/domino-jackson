@@ -16,6 +16,7 @@
 package org.dominokit.jacksonapt.processor.serialization;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.squareup.javapoet.*;
 import org.dominokit.jacksonapt.JacksonContextProvider;
 import org.dominokit.jacksonapt.JsonSerializationContext;
@@ -30,6 +31,8 @@ import org.dominokit.jacksonapt.stream.impl.DefaultJsonWriter;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
@@ -41,12 +44,14 @@ class SerializerBuilder extends AccessorsFilter {
     private final TypeMirror beanType;
     private final Element field;
     private final TypeMirror fieldType;
+    private final String packageName;
 
-    SerializerBuilder(Types typeUtils, TypeMirror beanType, Element field) {
+    SerializerBuilder(Types typeUtils, TypeMirror beanType, String packageName, Element field, TypeMirror fieldType) {
         super(typeUtils);
         this.beanType = beanType;
         this.field = field;
-        this.fieldType = field.asType();
+        this.fieldType = fieldType;
+        this.packageName = packageName;
     }
 
     TypeSpec buildSerializer() {
@@ -58,7 +63,7 @@ class SerializerBuilder extends AccessorsFilter {
 
         builder.addMethod(buildSerializerMethod());
 
-        if(nonNull(field.getAnnotation(JsonFormat.class))){
+        if (shouldAddParametersMethod()) {
             builder.addMethod(buildParametersMethod());
         }
 
@@ -78,27 +83,59 @@ class SerializerBuilder extends AccessorsFilter {
         return builder.build();
     }
 
+    private boolean shouldAddParametersMethod() {
+        return nonNull(field.getAnnotation(JsonFormat.class)) || nonNull(field.getAnnotation(JsonInclude.class)) || hasTypeJsonInclude();
+    }
+
     private MethodSpec buildSerializerMethod() {
         return MethodSpec.methodBuilder("newSerializer")
                 .addModifiers(Modifier.PROTECTED)
                 .addAnnotation(Override.class)
                 .returns(ParameterizedTypeName.get(ClassName.get(JsonSerializer.class), ObjectMapperProcessor.DEFAULT_WILDCARD))
-                .addStatement("return $L", new FieldSerializerChainBuilder(beanType).getInstance(field))
+                .addStatement("return $L", new FieldSerializerChainBuilder(packageName, beanType).getInstance(fieldType))
                 .build();
     }
 
-    private MethodSpec buildParametersMethod(){
+    private MethodSpec buildParametersMethod() {
         JsonFormat jsonFormat = field.getAnnotation(JsonFormat.class);
-        return MethodSpec.methodBuilder("newParameters")
+        JsonInclude jsonInclude = getJsonInclude();
+        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("newParameters")
                 .addModifiers(Modifier.PROTECTED)
                 .addAnnotation(Override.class)
                 .returns(JsonSerializerParameters.class)
-                .addStatement("return $T.get()\n\t\t.newSerializerParameters()\n\t\t.setPattern($S)\n\t\t.setShape($T.$L)"
-                        ,TypeName.get(JacksonContextProvider.class)
-                        ,jsonFormat.pattern()
-                        ,TypeName.get(JsonFormat.Shape.class)
-                        ,jsonFormat.shape().toString())
+                .addStatement("$T parameters = $T.get().newSerializerParameters()", TypeName.get(JsonSerializerParameters.class), TypeName.get(JacksonContextProvider.class));
+        if (nonNull(jsonFormat)) {
+            methodBuilder.addStatement("parameters.setPattern($S).setShape($T.$L)"
+                    , jsonFormat.pattern()
+                    , TypeName.get(JsonFormat.Shape.class)
+                    , jsonFormat.shape().toString());
+        }
+        if (nonNull(jsonInclude)) {
+            methodBuilder.addStatement("parameters.setInclude($T.$L)", TypeName.get(JsonInclude.Include.class), jsonInclude.value().toString());
+        }
+        return methodBuilder
+                .addStatement("return parameters")
                 .build();
+    }
+
+    private JsonInclude getJsonInclude() {
+        if (nonNull(field.getAnnotation(JsonInclude.class))) {
+            return field.getAnnotation(JsonInclude.class);
+        }
+        return beanType.getKind() == TypeKind.DECLARED ? getJsonInclude(((DeclaredType) beanType)) : null;
+    }
+
+
+    private JsonInclude getJsonInclude(DeclaredType enclosingType) {
+        TypeElement enclosingElement = ((TypeElement) enclosingType.asElement());
+        return enclosingElement.getAnnotation(JsonInclude.class);
+    }
+
+    private boolean hasTypeJsonInclude() {
+        if (beanType.getKind() == TypeKind.DECLARED) {
+            return ((DeclaredType) beanType).asElement().getAnnotation(JsonInclude.class) != null;
+        }
+        return false;
     }
 
     AbstractJsonMapperGenerator.AccessorInfo getterInfo() {

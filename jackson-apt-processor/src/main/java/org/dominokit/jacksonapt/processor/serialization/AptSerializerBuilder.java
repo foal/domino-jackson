@@ -16,16 +16,25 @@
 package org.dominokit.jacksonapt.processor.serialization;
 
 import com.squareup.javapoet.*;
+
+import org.dominokit.jacksonapt.JsonSerializer;
+import org.dominokit.jacksonapt.deser.bean.TypeDeserializationInfo;
 import org.dominokit.jacksonapt.processor.AbstractJsonMapperGenerator;
 import org.dominokit.jacksonapt.processor.Type;
 import org.dominokit.jacksonapt.ser.bean.AbstractBeanJsonSerializer;
 import org.dominokit.jacksonapt.ser.bean.BeanPropertySerializer;
+import org.dominokit.jacksonapt.ser.bean.SubtypeSerializer;
+import org.dominokit.jacksonapt.ser.bean.SubtypeSerializer.BeanSubtypeSerializer;
+import org.dominokit.jacksonapt.ser.bean.TypeSerializationInfo;
 
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.type.TypeMirror;
-import java.util.List;
+
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 import static org.dominokit.jacksonapt.processor.AbstractMapperProcessor.typeUtils;
 
@@ -40,42 +49,104 @@ public class AptSerializerBuilder extends AbstractJsonMapperGenerator {
     /**
      * <p>Constructor for AptSerializerBuilder.</p>
      *
-     * @param beanType a {@link javax.lang.model.type.TypeMirror} object.
-     * @param filer a {@link javax.annotation.processing.Filer} object.
+     * @param beanType    a {@link javax.lang.model.type.TypeMirror} object.
+     * @param packageName a {@link java.lang.String} object.
+     * @param filer       a {@link javax.annotation.processing.Filer} object.
      */
-    public AptSerializerBuilder(TypeMirror beanType, Filer filer) {
-        super(beanType, filer);
+    public AptSerializerBuilder(String packageName, TypeMirror beanType, Filer filer) {
+        super(packageName, beanType, filer);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected TypeName superClass() {
         return ParameterizedTypeName.get(ClassName.get(AbstractBeanJsonSerializer.class),
                 ClassName.get(beanType));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String namePostfix() {
         return Type.BEAN_JSON_SERIALIZER_IMPL;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String targetTypeMethodName() {
         return "getSerializedType";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected MethodSpec initMethod() {
         return buildInitSerializersMethod(beanType);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected MethodSpec initSubtypesMethod() {
+        if (subTypesInfo == null) {
+            return MethodSpec.methodBuilder("initMapSubtypeClassToSerializer")
+                    .addModifiers(Modifier.PROTECTED)
+                    .addAnnotation(Override.class)
+                    .returns(
+                            ParameterizedTypeName.get(
+                                    ClassName.get(Map.class),
+                                    ClassName.get(Class.class),
+                                    ClassName.get(SubtypeSerializer.class)))
+                    .addStatement("return $T.emptyMap()", Collections.class).build();
+        } else {
+            MethodSpec.Builder builder = MethodSpec.methodBuilder("initMapSubtypeClassToSerializer")
+                    .addModifiers(Modifier.PROTECTED)
+                    .addAnnotation(Override.class)
+                    .returns(
+                            ParameterizedTypeName.get(
+                                    ClassName.get(Map.class),
+                                    ClassName.get(Class.class),
+                                    ClassName.get(SubtypeSerializer.class)))
+                    .addStatement("$T map = new $T($L)",
+                            ParameterizedTypeName.get(
+                                    ClassName.get(Map.class),
+                                    ClassName.get(Class.class),
+                                    ClassName.get(SubtypeSerializer.class)),
+                            ClassName.get(IdentityHashMap.class),
+                            subTypesInfo.getSubTypes().size());
+
+            for (Map.Entry<String, TypeMirror> subtypeEntry : subTypesInfo.getSubTypes().entrySet()) {
+                // Prepare anonymous BeanTypeSerializer to delegate to the "real" serializer
+                TypeSpec subtypeType = TypeSpec.anonymousClassBuilder("")
+                        .superclass(ClassName.get(BeanSubtypeSerializer.class))
+                        .addMethod(MethodSpec.methodBuilder("newSerializer")
+                                .addModifiers(Modifier.PROTECTED)
+                                .addAnnotation(Override.class)
+                                .returns(ParameterizedTypeName.get(ClassName.get(JsonSerializer.class), WildcardTypeName.subtypeOf(Object.class)))
+                                .addStatement("return new $T()", ClassName.bestGuess(Type.serializerName(packageName, subtypeEntry.getValue())))
+                                .build()
+                        ).build();
+
+                builder.addStatement("map.put($T.class, $L)", TypeName.get(subtypeEntry.getValue()), subtypeType);
+            }
+
+            builder.addStatement("return map");
+            return builder.build();
+        }
+
+    }
+
     private MethodSpec buildInitSerializersMethod(TypeMirror beanType) {
 
         int[] index = new int[]{0};
-        final List<Element> fields = orderedFields();
+        final Map<Element, TypeMirror> fields = orderedFields();
 
         MethodSpec.Builder builder = MethodSpec.methodBuilder("initSerializers")
                 .addModifiers(Modifier.PROTECTED)
@@ -84,12 +155,17 @@ public class AptSerializerBuilder extends AbstractJsonMapperGenerator {
                 .addStatement("$T result = new $T[$L]",
                         ArrayTypeName.of(BeanPropertySerializer.class), BeanPropertySerializer.class, fields.size());
 
-        fields.stream()
-                .filter(this::isEligibleForSerializationDeserialization)
-                .forEach(field -> builder.addStatement("result[$L] = $L",
-                index[0]++, new SerializerBuilder(typeUtils, beanType, field).buildSerializer()));
+        fields.entrySet().stream()
+                .filter(entry -> isEligibleForSerializationDeserialization(entry.getKey()))
+                .forEach(entry -> builder.addStatement("result[$L] = $L",
+                        index[0]++, new SerializerBuilder(typeUtils, beanType, packageName, entry.getKey(), entry.getValue()).buildSerializer()));
 
         builder.addStatement("return result");
         return builder.build();
+    }
+
+    @Override
+    protected Class<?> getMapperType(){
+        return TypeSerializationInfo.class;
     }
 }
