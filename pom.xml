@@ -62,8 +62,8 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<gwt-cldr.ver>1.0.6-SNAPSHOT</gwt-cldr.ver>
-		<gwt-datetimeformat.ver>1.0.4-SNAPSHOT</gwt-datetimeformat.ver>
+		<gwt-cldr.ver>1.0.8-SNAPSHOT</gwt-cldr.ver>
+		<gwt-datetimeformat.ver>1.0.5-SNAPSHOT</gwt-datetimeformat.ver>
     </properties>
 
     <!-- <dependencyManagement>
