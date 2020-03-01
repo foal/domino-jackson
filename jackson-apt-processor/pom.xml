@@ -86,10 +86,10 @@
 			<artifactId>javax.annotation-api</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.google.jsinterop</groupId>
 			<artifactId>jsinterop-annotations</artifactId>
-		</dependency>
+		</dependency> -->
 	</dependencies>
 
 	<build>
