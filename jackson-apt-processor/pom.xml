@@ -53,12 +53,12 @@
 			<artifactId>gwt-dev</artifactId>
 			<scope>test</scope>
 		</dependency> -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.jresearch.dominokit.jackson</groupId>
 			<artifactId>jackson-apt</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>org.jresearch.dominokit.jackson</groupId>
 			<artifactId>jackson-super</artifactId>
@@ -189,6 +189,14 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<configuration>
+					<ignoredUnusedDeclaredDependencies>
+						<ignoredUnusedDeclaredDependency>com.google.auto.service:auto-service-annotations</ignoredUnusedDeclaredDependency>
+					</ignoredUnusedDeclaredDependencies>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
