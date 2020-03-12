@@ -75,7 +75,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!-- fix inconsistent versions in gwt-dev -->
+            <!- fix inconsistent versions in gwt-dev ->
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
@@ -86,7 +86,7 @@
                 <artifactId>xml-apis</artifactId>
                 <version>1.4.01</version>
             </dependency>
-            <!-- end inconsistent versions in gwt-dev -->
+            <!- end inconsistent versions in gwt-dev ->
 
             <dependency>
                 <groupId>junit</groupId>
