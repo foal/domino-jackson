@@ -10,7 +10,7 @@
 
     <groupId>org.jresearch.dominokit.jackson</groupId>
     <artifactId>domino-jackson</artifactId>
-    <version>1.13-SNAPSHOT</version>
+    <version>1.14-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <url>https://github.com/DominoKit/gwt-jackson-apt</url>
