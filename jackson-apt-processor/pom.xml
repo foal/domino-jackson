@@ -190,6 +190,20 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- release changes -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>com.google.auto.service</groupId>
+							<artifactId>auto-service</artifactId>
+							<version>${auto-service.ver}</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
 			<plugin>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<configuration>
@@ -198,6 +212,7 @@
 					</ignoredUnusedDeclaredDependencies>
 				</configuration>
 			</plugin>
+			<!-- release changes -->
 		</plugins>
 	</build>
 </project>
