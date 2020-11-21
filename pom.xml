@@ -10,7 +10,7 @@
 
     <groupId>org.jresearch.dominokit.jackson</groupId>
     <artifactId>domino-jackson</artifactId>
-    <version>1.17</version>
+    <version>1.18-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <url>https://github.com/DominoKit/gwt-jackson-apt</url>
@@ -39,7 +39,7 @@
 		<developerConnection>scm:hg:ssh://hth@helixteamhub.cloud/JRS/projects/domino/repositories/mercurial/domino-jackson</developerConnection>
 		<connection>scm:hg:ssh://hth@helixteamhub.cloud/JRS/projects/domino/repositories/mercurial/domino-jackson</connection>
 		<url>https://helixteamhub.cloud/JRS/projects/domino/repositories/mercurial/domino-jackson</url>
-    <tag>v1.17</tag>
+    <tag>HEAD</tag>
   </scm>
 
     <!-- <distributionManagement>
