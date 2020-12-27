@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
@@ -16,15 +17,15 @@
 	<url>https://github.com/DominoKit/gwt-jackson-apt</url>
 	<description>Apt based jackson</description>
 
-	<properties>
+	<!-- <properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-	</properties>
+	</properties> -->
 
-	<dependencyManagement>
+	<!-- <dependencyManagement>
 		<dependencies>
-            <!-- fix dependency conflicts between compile-testing and auto-service, auto-common -->
+            fix dependency conflicts between compile-testing and auto-service, auto-common
 			<dependency>
 				<groupId>com.google.errorprone</groupId>
 				<artifactId>error_prone_annotations</artifactId>
@@ -36,7 +37,7 @@
 				<version>27.1-jre</version>
 			</dependency>
 		</dependencies>
-	</dependencyManagement>
+	</dependencyManagement> -->
 
 	<dependencies>
 		<!-- <dependency>
@@ -57,17 +58,14 @@
 		<dependency>
 			<groupId>org.jresearch.dominokit.jackson</groupId>
 			<artifactId>jackson-super</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jresearch.dominokit.jackson</groupId>
 			<artifactId>jackson-apt</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.auto</groupId>
 			<artifactId>auto-common</artifactId>
-			<version>0.10</version>
 		</dependency>
 		<dependency>
 			<groupId>com.squareup</groupId>
