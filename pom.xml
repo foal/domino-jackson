@@ -91,7 +91,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.12</version>
+                <version>4.13.1</version>
             </dependency>
             <dependency>
                 <groupId>com.google.elemental2</groupId>
@@ -168,7 +168,7 @@
                 <plugin>
                     <groupId>net.ltgt.gwt.maven</groupId>
                     <artifactId>gwt-maven-plugin</artifactId>
-                    <version>1.0-rc-8</version>
+                    <version>1.0.0</version>
                     <extensions>true</extensions>
                     <configuration>
                         <sourceLevel>1.8</sourceLevel>

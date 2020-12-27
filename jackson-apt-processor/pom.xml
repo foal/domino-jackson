@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -41,7 +42,7 @@
 		<!-- <dependency>
 			<groupId>org.dominokit</groupId>
 			<artifactId>domino-apt-commons</artifactId>
-			<version>1.0-rc.4-SNAPSHOT</version>
+            		<version>0.0.1</version>
 		</dependency> -->
 		<!-- <dependency>
 			<groupId>com.google.gwt</groupId>
@@ -51,12 +52,6 @@
 		<!-- <dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-dev</artifactId>
-			<scope>test</scope>
-		</dependency> -->
-		<!-- <dependency>
-			<groupId>org.jresearch.dominokit.jackson</groupId>
-			<artifactId>jackson-apt</artifactId>
-			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency> -->
 		<dependency>
@@ -85,23 +80,8 @@
 		<!-- <dependency>
 			<groupId>com.google.testing.compile</groupId>
 			<artifactId>compile-testing</artifactId>
-            <version>0.18</version>
+            		<version>0.18</version>
 			<scope>test</scope>
-		</dependency> -->
-		<!-- <dependency>
-			<groupId>com.google.truth</groupId>
-			<artifactId>truth</artifactId>
-			<version>0.36</version>
-			<scope>test</scope>
-		</dependency> -->
-		<!-- <dependency>
-			<groupId>javax.annotation</groupId>
-			<artifactId>javax.annotation-api</artifactId>
-			<scope>test</scope>
-		</dependency> -->
-		<!-- <dependency>
-			<groupId>com.google.jsinterop</groupId>
-			<artifactId>jsinterop-annotations</artifactId>
 		</dependency> -->
 	</dependencies>
 
